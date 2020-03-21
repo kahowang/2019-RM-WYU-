@@ -1,0 +1,14 @@
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
+m3508(11.20hal)\heap_4.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdlib.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+m3508(11.20hal)\heap_4.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stddef.h
+m3508(11.20hal)\heap_4.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdint.h
+m3508(11.20hal)\heap_4.o: ../Inc/FreeRTOSConfig.h
+m3508(11.20hal)\heap_4.o: ../Inc/main.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+m3508(11.20hal)\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h

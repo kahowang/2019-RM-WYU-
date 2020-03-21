@@ -1,0 +1,14 @@
+Sin_up 
+a=[0.08:0.0046:1.0];
+b=(sin((pi*a-pi/2))+1)/2;
+plot(b);
+csvwrite('csvlist.dat',b);
+type csvlist.dat;
+
+/*乘以一次函数 -x+1*/
+Sin_down
+ a=[0:0.005:1.0];
+b=(-a+1).*(sin(-(pi*a-pi/2))+1)/2;
+plot(b);
+csvwrite('csvlist.dat',b);
+type csvlist.dat;

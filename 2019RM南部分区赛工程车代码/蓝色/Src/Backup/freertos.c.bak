@@ -1,0 +1,199 @@
+/**
+  ******************************************************************************
+  * File Name          : freertos.c
+  * Description        : Code for freertos applications
+  ******************************************************************************
+  * This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
+  *
+  * Copyright (c) 2019 STMicroelectronics International N.V. 
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without 
+  * modification, are permitted, provided that the following conditions are met:
+  *
+  * 1. Redistribution of source code must retain the above copyright notice, 
+  *    this list of conditions and the following disclaimer.
+  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  *    this list of conditions and the following disclaimer in the documentation
+  *    and/or other materials provided with the distribution.
+  * 3. Neither the name of STMicroelectronics nor the names of other 
+  *    contributors to this software may be used to endorse or promote products 
+  *    derived from this software without specific written permission.
+  * 4. This software, including modifications and/or derivative works of this 
+  *    software, must execute solely and exclusively on microcontroller or
+  *    microprocessor devices manufactured by or for STMicroelectronics.
+  * 5. Redistribution and use of this software other than as permitted under 
+  *    this license is void and will automatically terminate your rights under 
+  *    this license. 
+  *
+  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  ******************************************************************************
+  */
+
+/* Includes ------------------------------------------------------------------*/
+#include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
+
+/* USER CODE BEGIN Includes */     
+#include "pid.h"
+#include "bsp_can.h"     
+#include "mytype.h" 
+#include "motor_ctr.h"
+#include "Remote_Control.h"
+#include "usart.h"
+#include "mainpp.h" 
+#include "config.h"
+#include "tim.h"
+#include "bsp_uart.h"   
+#include  "imu.h"  
+#include "perspective.h"
+/* USER CODE END Includes */
+
+/* Variables -----------------------------------------------------------------*/
+osThreadId defaultTaskHandle;
+osTimerId Usart1TimerHandle;
+osTimerId RosDelayTimerHandle;
+osTimerId perspectiveTimerHandle;
+
+/* USER CODE BEGIN Variables */
+ int a = 1;
+ int k = 1;//串口延时打印用
+ extern int32_t  perspective_time;
+/* USER CODE END Variables */
+
+/* Function prototypes -------------------------------------------------------*/
+void StartDefaultTask(void const * argument);
+void Usart1TimerCallback(void const * argument);
+void RosDelayTimerCallback(void const * argument);
+void perspectiveTimerCallback(void const * argument);
+
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* USER CODE BEGIN FunctionPrototypes */
+void ros_control_task(void);
+void print_info(void);  //打印函数
+/* USER CODE END FunctionPrototypes */
+
+/* Hook prototypes */
+
+/* Init FreeRTOS */
+
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+       
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* Create the timer(s) */
+  /* definition and creation of Usart1Timer */
+  osTimerDef(Usart1Timer, Usart1TimerCallback);
+  Usart1TimerHandle = osTimerCreate(osTimer(Usart1Timer), osTimerPeriodic, NULL);
+
+  /* definition and creation of RosDelayTimer */
+  osTimerDef(RosDelayTimer, RosDelayTimerCallback);
+  RosDelayTimerHandle = osTimerCreate(osTimer(RosDelayTimer), osTimerPeriodic, NULL);
+
+  /* definition and creation of perspectiveTimer */
+  osTimerDef(perspectiveTimer, perspectiveTimerCallback);
+  perspectiveTimerHandle = osTimerCreate(osTimer(perspectiveTimer), osTimerPeriodic, NULL);
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+	
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the thread(s) */
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 512);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+}
+
+/* StartDefaultTask function */
+void StartDefaultTask(void const * argument)
+{
+
+  /* USER CODE BEGIN StartDefaultTask */
+	my_can_filter_init_recv_all(&hcan1);
+	my_can_filter_init_recv_all(&hcan2);
+	HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0);
+	HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0);
+	HAL_UART_Receive_IT_IDLE(&huart2,UART_Buffer,100);   //启动串口接收 
+	osTimerStart(Usart1TimerHandle,1000);       //开启串口延时定时器
+	osTimerStart(perspectiveTimerHandle,500);       //开启串口延时定时器
+	HAL_TIM_Base_Start_IT(&htim5);  //使能TIM5中断，溢出时间为1ms
+	moto_param_init();   //初始化电机pid参数
+  /* Infinite loop */
+  for(;;)
+  {		
+		remote_ros_switch();   //右侧拨杆控制是否使用ROS，包含ROS的回调订阅发布函数
+		keyboard_perspective_change();   //按“CTRL”视角切换        
+		ros_control_loop();
+		pid_control_output();
+		
+		//imu_data_get();
+		osDelay(1);  //会引起任务调度
+		}
+  /* USER CODE END StartDefaultTask */
+}
+
+/* Usart1TimerCallback function */
+void Usart1TimerCallback(void const * argument)
+{
+  /* USER CODE BEGIN Usart1TimerCallback */
+   k = 1;
+  /* USER CODE END Usart1TimerCallback */
+}
+
+/* RosDelayTimerCallback function */
+void RosDelayTimerCallback(void const * argument)
+{
+  /* USER CODE BEGIN RosDelayTimerCallback */
+  a = -a;
+  /* USER CODE END RosDelayTimerCallback */
+}
+
+/* perspectiveTimerCallback function */
+void perspectiveTimerCallback(void const * argument)
+{
+  /* USER CODE BEGIN perspectiveTimerCallback */
+   perspective_time = 1;
+  /* USER CODE END perspectiveTimerCallback */
+}
+
+/* USER CODE BEGIN Application */
+
+/* USER CODE END Application */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
