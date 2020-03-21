@@ -1,0 +1,16 @@
+mpu6050soft\mpl.o: ..\DMP\mllite\mpl.c
+mpu6050soft\mpl.o: ..\DMP\mllite\storage_manager.h
+mpu6050soft\mpl.o: ..\DMP\driver\include\mltypes.h
+mpu6050soft\mpl.o: ..\DMP\driver\include\stdint_invensense.h
+mpu6050soft\mpl.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdint.h
+mpu6050soft\mpl.o: E:\MDK525\ARM\ARMCC\Bin\..\include\string.h
+mpu6050soft\mpl.o: E:\MDK525\ARM\ARMCC\Bin\..\include\errno.h
+mpu6050soft\mpl.o: E:\MDK525\ARM\ARMCC\Bin\..\include\limits.h
+mpu6050soft\mpl.o: ..\DMP\driver\include\log.h
+mpu6050soft\mpl.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdlib.h
+mpu6050soft\mpl.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdarg.h
+mpu6050soft\mpl.o: ..\DMP\mllite\mpl.h
+mpu6050soft\mpl.o: ..\DMP\mllite\start_manager.h
+mpu6050soft\mpl.o: ..\DMP\mllite\data_builder.h
+mpu6050soft\mpl.o: ..\DMP\mllite\results_holder.h
+mpu6050soft\mpl.o: ..\DMP\driver\include\mlinclude.h

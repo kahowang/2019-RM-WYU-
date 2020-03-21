@@ -1,0 +1,5 @@
+2.13参照正点原子F407 mpu6050,F429 mpu9250，和野火F103 mpu6050 写了软件模拟IIC读取mpu6050原始数据（raw），特别注意delay_us等函数的写法。
+2.14参照http://www.stm32cube.com/article/176，这个网址，使用TIM7写了了delay_us的函数，并用到模拟I2C读取上，加大延时的准确性。
+2.14.2参照正点原子的教程，移植DMP库，得到pitch，yaw，roll三个姿态。
+2.15读取9250DMP
+2019.2.15王家浩

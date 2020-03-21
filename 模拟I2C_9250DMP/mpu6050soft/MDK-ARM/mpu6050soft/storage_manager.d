@@ -1,0 +1,14 @@
+mpu6050soft\storage_manager.o: ..\DMP\mllite\storage_manager.c
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\string.h
+mpu6050soft\storage_manager.o: ..\DMP\mllite\storage_manager.h
+mpu6050soft\storage_manager.o: ..\DMP\driver\include\mltypes.h
+mpu6050soft\storage_manager.o: ..\DMP\driver\include\stdint_invensense.h
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdint.h
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\errno.h
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\limits.h
+mpu6050soft\storage_manager.o: ..\DMP\driver\include\log.h
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdlib.h
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\stdarg.h
+mpu6050soft\storage_manager.o: ..\DMP\mllite\ml_math_func.h
+mpu6050soft\storage_manager.o: ..\DMP\driver\include\mlmath.h
+mpu6050soft\storage_manager.o: E:\MDK525\ARM\ARMCC\Bin\..\include\math.h
